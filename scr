@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+
+#===================================================================================================================================#
+#                                                                                                                                   #
+#                                                      github.com/tagirov/shell                                                     #
+#                                                                                                                                   #
+#===================================================================================================================================#
+
+
+## replace for external process [github.com/dylanaraps/pure-bash-bible]
+r_sleep() {
+    read -rt "$1" <> <(:) || :
+}
+
+scr_dir=~/pictures/screen/
+
+date=$(date +%F)
+timestamp=$(date +"%H-%M-%S")
+file="$scr_dir/$date-$timestamp.jpg"
+
+ffmpeg              \
+    -y              \
+    -hide_banner    \
+    -loglevel error \
+    -f x11grab      \
+    -i :0.0         \
+    -vframes 1      \
+    -q:v 0          \
+    "$file"
+
+if [ "$1" != "g" ]; then
+	exit 0
+else
+    gimp $file
+   	r_sleep 1	## the file will be deleted before gimp opens it if gimp already launched
+    rm $file
+fi
