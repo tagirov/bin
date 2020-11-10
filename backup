@@ -1,11 +1,5 @@
 #!/usr/bin/env bash
 
-#===================================================================================================================================#
-#                                                                                                                                   #
-#                                                      github.com/tagirov/shell                                                     #
-#                                                                                                                                   #
-#===================================================================================================================================#
-
 BACKUP_DEVICE=""
 BACKUP_DIR="$BACKUP_DEVICE/backup/"
 
@@ -14,7 +8,7 @@ RED="\033[38;5;196m"
 
 KEY=""
 
-## replace for external process [github.com/dylanaraps/pure-bash-bible]
+### replace for external process [github.com/dylanaraps/pure-bash-bible]
 r_sleep() {
     read -rt "$1" <> <(:) || :
 }
@@ -25,41 +19,44 @@ if [ ! -d "$BACKUP_DIR" ]; then
 fi
 
 if [ ! -d "$BACKUP_DIR" ]; then
-    printf "\n\t$RED%s\n" "Unable to mount backup folder"
+    printf "\n\t$RED%s\n" "unable to mount backup folder"
     exit 1
 else
-	echo "Mount OK"
+	echo "mount OK"
 fi
 
-## Save list of packages
-comm -23 <(pacman -Qqe | sort) <({ pacman -Qqg base-devel; expac -l '\n' '%E' base; } | sort -u ) > $HOME/
+### Save packages list
+comm -23 <(pacman -Qqe | sort) <({ pacman -Qqg base-devel; expac -l '\n' '%E'  \
+  base; } | sort -u ) > $BACKUP_DIR/pkgs
 
-echo "Pkg list OK"
+echo "pkgs list OK"
 
-tar                                             \
-    --exclude='$HOME/.cache'                    \
-    --exclude='$HOME/.cargo'                    \
-    --exclude='$HOME/.elinks'                   \
-    --exclude='$HOME/.gnome'                    \
-    --exclude='$HOME/.gnupg'                    \
-    --exclude='$HOME/.icon'                     \
-    --exclude='$HOME/.java'                     \
-    --exclude='$HOME/.local'                    \
-    --exclude='$HOME/.mozilla'                  \
-    --exclude='$HOME/.npm'                      \
-    --exclude='$HOME/.oh-my-zsh'                \
-    --exclude='$HOME/.pki'                      \
-    --exclude='$HOME/.rustup'                   \
-    --exclude='$HOME/.tor-browser'              \
-                                                \
-    --exclude='$HOME/.bash_history'             \
-    --exclude='$HOME/.gtkrc-2.0'                \
-    --exclude='$HOME/.lesshst'                  \
-    --exclude='$HOME/.rnd'                      \
-    --exclude='$HOME/.wget-hsts'                \
-    --exclude='$HOME/.Xauthority'               \
-                                                \
--z --create --file "$BACKUP_DIR/$(date +%Y%m%d%H%M).tar.gz" --listed-incremental=$BACKUP_DIR/snapshot.snar $HOME/ 2>&1 | rg -v "Removing leading"
+tar                                                                            \
+    --exclude='$HOME/.cache'                                                   \
+    --exclude='$HOME/.cargo'                                                   \
+    --exclude='$HOME/.elinks'                                                  \
+    --exclude='$HOME/.gnome'                                                   \
+    --exclude='$HOME/.gnupg'                                                   \
+    --exclude='$HOME/.icon'                                                    \
+    --exclude='$HOME/.java'                                                    \
+    --exclude='$HOME/.local'                                                   \
+    --exclude='$HOME/.mozilla'                                                 \
+    --exclude='$HOME/.npm'                                                     \
+    --exclude='$HOME/.oh-my-zsh'                                               \
+    --exclude='$HOME/.pki'                                                     \
+    --exclude='$HOME/.rustup'                                                  \
+    --exclude='$HOME/.tor-browser'                                             \
+                                                                               \
+    --exclude='$HOME/.bash_history'                                            \
+    --exclude='$HOME/.gtkrc-2.0'                                               \
+    --exclude='$HOME/.lesshst'                                                 \
+    --exclude='$HOME/.rnd'                                                     \
+    --exclude='$HOME/.wget-hsts'                                               \
+    --exclude='$HOME/.Xauthority'                                              \
+                                                                               \
+-z --create --file "$BACKUP_DIR/$(date +%Y%m%d%H%M).tar.gz"                    \
+  --listed-incremental=$BACKUP_DIR/snapshot.snar $HOME/ 2>&1                   \
+  | rg -v "Removing leading"
 
 echo "tar OK"
 
@@ -67,13 +64,13 @@ gpg -r $KEY --encrypt-files $BACKUP_DIR*.tar.gz && rm -rf $BACKUP_DIR*.tar.gz
 
 echo "gpg OK"
 
-read -r -n 1 -p "Umount backup device? [y/n] " NEED_UMOUNT
+read -r -n 1 -p "umount backup device? [y/n] " NEED_UMOUNT
 printf '\n'
 
 if [ "$NEED_UMOUNT" = "y" ]; then
     umount "$BACKUP_DEVICE" &&
-    printf "\t$GREEN%s\n" "Backup OK" "Umount OK" ||
-    printf "\t$GREEN%s\n\t$RED%s\n" "Backup OK" "Umount FAIL"
+    printf "\t$GREEN%s\n" "backup OK" "umount OK" ||
+    printf "\t$GREEN%s\n\t$RED%s\n" "backup OK" "umount FAIL"
 else
-    printf "\t$GREEN%s\n" "Backup OK"
+    printf "\t$GREEN%s\n" "backup OK"
 fi

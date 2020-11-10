@@ -1,13 +1,6 @@
 #!/usr/bin/env bash
 
-#===================================================================================================================================#
-#                                                                                                                                   #
-#                                                      github.com/tagirov/shell                                                     #
-#                                                                                                                                   #
-#===================================================================================================================================#
-
-
-## replace for external process [github.com/dylanaraps/pure-bash-bible]
+### replace for external process [github.com/dylanaraps/pure-bash-bible]
 r_sleep() {
     read -rt "$1" <> <(:) || :
 }
