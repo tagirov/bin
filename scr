@@ -1,15 +1,20 @@
 #!/usr/bin/env bash
 
-### replace for external process [github.com/dylanaraps/pure-bash-bible]
-r_sleep() {
+#  screenshooter
+#
+#  updates: github.com/tagirov/bin
+#  deps:    ffmpeg, xclip, gimp
+
+## replace for external process [github.com/dylanaraps/pure-bash-bible]
+_sleep() {
     read -rt "$1" <> <(:) || :
 }
 
-scr_dir=~/pictures/screen/
+scr_dir=~/pics/screen/
 
 date=$(date +%F)
-timestamp=$(date +"%H-%M-%S")
-file="$scr_dir/$date-$timestamp.jpg"
+time=$(date +"%H-%M-%S")
+file="$scr_dir/$date-$time.jpg"
 
 ffmpeg              \
     -y              \
@@ -21,10 +26,15 @@ ffmpeg              \
     -q:v 0          \
     "$file"
 
-if [ "$1" != "g" ]; then
-	exit 0
-else
+## copy image to clipboard
+if [ "$1" == "c" ]; then
+    xclip -selection clipboard -t image/png < "$file"
+    rm $file
+fi
+
+## save to folder and open in gimp
+if [ "$1" == "g" ]; then
     gimp $file
-   	r_sleep 1	## the file will be deleted before gimp opens it if gimp already launched
+    _sleep 1  ## the file will be deleted before gimp opens it if gimp is already launched
     rm $file
 fi
